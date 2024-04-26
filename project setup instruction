@@ -1,0 +1,99 @@
+Install docker ce and compose using chatgpt instruction.
+[
+sudo apt update
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt install docker-ce
+sudo apt install docker-compose
+docker --version
+docker-compose --version
+
+]
+
+go to project directory
+in termial : docker compose up
+
+
+open terminal in the same directory 
+cd vote
+docker build . -t voting-app
+docker images
+
+
+
+before running the app , we need to run redis and postgres: for that 
+docker run -d --name=db -e POSTGRES_PASSWORD=postgres postgres:9.6
+docker ps #(to see the list of docker images)
+docker run --name=redis redis
+
+
+
+docker ps
+
+
+
+# go to worker directory
+cd ../worker/
+docker build . -t worker
+docker run --link redis:redis --link db:db worker
+
+#dont run the below command before running redis run
+docker run -p 5002:80 voting-app
+
+
+
+then go to browser and hit http://localhost:5002/
+
+
+
+#building and running the result app
+cd ../result/
+
+docker build . -t result
+docker run -p 5003:80 --link db:db result
+
+
+
+
+There should be running the following commands :
+#[this is in outside directory]
+docker compose up
+
+#[this is in vote directory]    
+docker run --name=redis redis
+
+
+#[this is in worker directory]
+docker run --link redis:redis --link db:db worker
+
+
+#[this is in result directory]
+docker run -p 5007:80 --link db:db result
+
+#[this is in vote directory]    
+docker run -p 5002:80 voting-app
+docker run -p 5002:80 --link db:db voting-app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
